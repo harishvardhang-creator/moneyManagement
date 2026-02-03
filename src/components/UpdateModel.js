@@ -29,6 +29,17 @@ export default function UpdateModel({ transaction, close, onUpdated }) {
     }
   }, [transaction]);
 
+  const formatDateTimeLocal = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+  };
+
   const submit = async () => {
     if (!transaction?.id) {
       alert("Invalid transaction. Cannot update.");
@@ -102,6 +113,19 @@ export default function UpdateModel({ transaction, close, onUpdated }) {
           className="border w-full mb-2 p-2 rounded"
           value={data.description}
           onChange={(e) => setData({ ...data, description: e.target.value })}
+        />
+
+        {/* Date & Time */}
+        <label className="block text-sm text-gray-600 mb-1">Date & Time</label>
+        <input
+          type="datetime-local"
+          className="border w-full mb-2 p-2 rounded"
+          value={formatDateTimeLocal(data.dateTime)}
+          onChange={(e) => {
+            const val = e.target.value; // 'YYYY-MM-DDTHH:MM' local
+            const iso = val ? new Date(val).toISOString() : ""; // store as ISO UTC
+            setData({ ...data, dateTime: iso });
+          }}
         />
 
         {/* Buttons */}
