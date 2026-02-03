@@ -16,8 +16,8 @@ export default function Dashboard() {
   const [success, setSuccess] = useState(false);
 
   const fetchTransactions = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // if (!user) return;
 
     try {
       const res = await API.get(`/all`);
