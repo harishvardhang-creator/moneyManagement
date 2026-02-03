@@ -39,7 +39,7 @@ export default function UpdateModel({ transaction, close, onUpdated }) {
       return;
     }
     try {
-      const res = await API.put(`/update/${transaction.id}`, data);
+      const res = await API.put(`/api/update/${transaction.id}`, data);
       console.log("Updated:", res.data);
       alert("Transaction Updated Successfully");
       if (typeof onUpdated === "function") onUpdated();

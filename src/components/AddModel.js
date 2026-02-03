@@ -9,7 +9,6 @@ export default function AddModel({ close, onSaved }) {
 
   const [tab, setTab] = useState("INCOME");
 
-  
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [data, setData] = useState({
@@ -35,7 +34,8 @@ export default function AddModel({ close, onSaved }) {
     }
 
     try {
-      const res = await API.post("/add", data);
+      // Fixed endpoint to include /api
+      const res = await API.post("/api/add", data);
       console.log("Transaction added:", res.data);
       onSaved();  // refresh table & show success
       close();    // close modal
@@ -52,7 +52,6 @@ export default function AddModel({ close, onSaved }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-
       <div className="bg-white p-4 w-96">
 
         {/* TABS */}
@@ -63,7 +62,6 @@ export default function AddModel({ close, onSaved }) {
           >
             Income
           </button>
-
           <button
             className={`flex-1 p-2 ${tab === "EXPENSE" ? "bg-red-500 text-white" : ""}`}
             onClick={() => changeTab("EXPENSE")}
@@ -87,9 +85,7 @@ export default function AddModel({ close, onSaved }) {
           value={data.category}
           onChange={e => setData({ ...data, category: e.target.value })}
         >
-          {categories.map(c =>
-            <option key={c}>{c}</option>
-          )}
+          {categories.map(c => <option key={c}>{c}</option>)}
         </select>
 
         {/* DIVISION */}
