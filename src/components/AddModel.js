@@ -18,16 +18,10 @@ export default function AddModel({ close, onSaved }) {
     division: "Personal",
     description: "",
     dateTime: new Date().toISOString(),
-    userId: user.id || ""  
+    userId: user.id || "1"  
   });
 
   const submit = async () => {
-    if (!user.id) {
-      alert("Please login first to add a transaction.");
-      close();
-      return;
-    }
-
     if (!data.amount) {
       alert("Amount cannot be empty.");
       return;
