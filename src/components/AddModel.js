@@ -35,7 +35,7 @@ export default function AddModel({ close, onSaved }) {
 
     try {
       // Fixed endpoint to include /api
-      const res = await API.post("/api/add", data);
+      const res = await API.post("/add", data);
       console.log("Transaction added:", res.data);
       onSaved();  // refresh table & show success
       close();    // close modal
