@@ -2,12 +2,15 @@ import { useState } from "react";
 import API from "../services/api";
 
 const categories = [
-  "Fuel","Movie","Food","Loan","Medical","Shopping","Other"
+  "Fuel", "Movie", "Food", "Loan", "Medical", "Shopping", "Other"
 ];
 
-export default function AddModal({ close, onSaved }) {
+export default function AddModel({ close, onSaved }) {
 
   const [tab, setTab] = useState("INCOME");
+
+  // Safely get user from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [data, setData] = useState({
     type: "INCOME",
@@ -16,82 +19,107 @@ export default function AddModal({ close, onSaved }) {
     division: "Personal",
     description: "",
     dateTime: new Date().toISOString(),
-    userId: JSON.parse(localStorage.getItem("user")).id   
+    userId: user.id || ""   // safe fallback
   });
 
+  // Submit handler with error handling
   const submit = async () => {
-    await API.post("/add", data);
-    onSaved();
-    close();
+    if (!user.id) {
+      alert("Please login first to add a transaction.");
+      close();
+      return;
+    }
+
+    if (!data.amount) {
+      alert("Amount cannot be empty.");
+      return;
+    }
+
+    try {
+      const res = await API.post("/add", data);
+      console.log("Transaction added:", res.data);
+      onSaved();  // refresh table & show success
+      close();    // close modal
+    } catch (err) {
+      console.error("Failed to add transaction:", err);
+      alert("Failed to add transaction. Please try again.");
+    }
   };
 
   const changeTab = (t) => {
     setTab(t);
-    setData({...data, type:t});
+    setData({ ...data, type: t });
   };
-  
 
   return (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
 
-   <div className="bg-white p-4 w-96">
+      <div className="bg-white p-4 w-96">
 
-    {/* TABS */}
-    <div className="flex mb-3">
-      <button
-        className={`flex-1 p-2 ${tab==="INCOME"?"bg-green-500 text-white":""}`}
-        onClick={()=>changeTab("INCOME")}
-      >
-        Income
-      </button>
+        {/* TABS */}
+        <div className="flex mb-3">
+          <button
+            className={`flex-1 p-2 ${tab === "INCOME" ? "bg-green-500 text-white" : ""}`}
+            onClick={() => changeTab("INCOME")}
+          >
+            Income
+          </button>
 
-      <button
-        className={`flex-1 p-2 ${tab==="EXPENSE"?"bg-red-500 text-white":""}`}
-        onClick={()=>changeTab("EXPENSE")}
-      >
-        Expense
-      </button>
+          <button
+            className={`flex-1 p-2 ${tab === "EXPENSE" ? "bg-red-500 text-white" : ""}`}
+            onClick={() => changeTab("EXPENSE")}
+          >
+            Expense
+          </button>
+        </div>
+
+        {/* AMOUNT */}
+        <input
+          type="number"
+          className="border w-full mb-2"
+          placeholder="Amount"
+          value={data.amount}
+          onChange={e => setData({ ...data, amount: e.target.value })}
+        />
+
+        {/* CATEGORY DROPDOWN */}
+        <select
+          className="border w-full mb-2"
+          value={data.category}
+          onChange={e => setData({ ...data, category: e.target.value })}
+        >
+          {categories.map(c =>
+            <option key={c}>{c}</option>
+          )}
+        </select>
+
+        {/* DIVISION */}
+        <select
+          className="border w-full mb-2"
+          value={data.division}
+          onChange={e => setData({ ...data, division: e.target.value })}
+        >
+          <option>Personal</option>
+          <option>Office</option>
+        </select>
+
+        {/* DESCRIPTION */}
+        <input
+          className="border w-full mb-2"
+          placeholder="Description"
+          value={data.description}
+          onChange={e => setData({ ...data, description: e.target.value })}
+        />
+
+        {/* SAVE BUTTON */}
+        <button
+          className="bg-green-500 text-white p-2 w-full"
+          onClick={submit}
+        >
+          Save
+        </button>
+
+      </div>
     </div>
-
-    <input
-      type="number"
-      className="border w-full mb-2"
-      placeholder="Amount"
-      onChange={e=>setData({...data,amount:e.target.value})}
-    />
-
-    {/* CATEGORY DROPDOWN */}
-    <select
-      className="border w-full mb-2"
-      onChange={e=>setData({...data,category:e.target.value})}
-    >
-      {categories.map(c=>
-        <option key={c}>{c}</option>
-      )}
-    </select>
-
-    {/* DIVISION */}
-    <select
-      className="border w-full mb-2"
-      onChange={e=>setData({...data,division:e.target.value})}
-    >
-      <option>Personal</option>
-      <option>Office</option>
-    </select>
-
-    <input
-      className="border w-full mb-2"
-      placeholder="Description"
-      onChange={e=>setData({...data,description:e.target.value})}
-    />
-
-    <button
-      className="bg-green-500 text-white p-2 w-full"
-      onClick={submit}
-    >
-      Save
-    </button>
-
-   </div>
-  </div>);
+  );
 }

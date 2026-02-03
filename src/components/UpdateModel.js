@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import API from "../services/api";
 
-export default function UpdateModal({ transaction, close, onUpdated }) {
+const categories = [
+  "Fuel", "Movie", "Food", "Loan", "Medical", "Shopping", "Other"
+];
+
+export default function UpdateModel({ transaction, close, onUpdated }) {
   const [data, setData] = useState({
     type: "INCOME",
     amount: "",
-    category: "",
-    division: "",
+    category: "Food",
+    division: "Personal",
     description: "",
     dateTime: new Date().toISOString(),
   });
@@ -15,17 +19,21 @@ export default function UpdateModal({ transaction, close, onUpdated }) {
   useEffect(() => {
     if (transaction) {
       setData({
-        type: transaction.type,
-        amount: transaction.amount,
-        category: transaction.category,
-        division: transaction.division,
-        description: transaction.description,
-        dateTime: transaction.dateTime,
+        type: transaction.type || "INCOME",
+        amount: transaction.amount || "",
+        category: transaction.category || "Food",
+        division: transaction.division || "Personal",
+        description: transaction.description || "",
+        dateTime: transaction.dateTime || new Date().toISOString(),
       });
     }
   }, [transaction]);
 
   const submit = async () => {
+    if (!transaction?.id) {
+      alert("Invalid transaction. Cannot update.");
+      return;
+    }
     if (!data.amount) {
       alert("Enter amount");
       return;
@@ -38,7 +46,10 @@ export default function UpdateModal({ transaction, close, onUpdated }) {
       if (typeof close === "function") close();
     } catch (err) {
       console.error("Error updating:", err.response || err);
-      alert("Backend Error: " + (err.response?.data || err.message));
+      const msg = err.response?.data
+        ? JSON.stringify(err.response.data)
+        : err.message;
+      alert("Backend Error: " + msg);
     }
   };
 
@@ -67,12 +78,15 @@ export default function UpdateModal({ transaction, close, onUpdated }) {
         />
 
         {/* Category */}
-        <input
-          placeholder="Category"
+        <select
           className="border w-full mb-2 p-2 rounded"
           value={data.category}
           onChange={(e) => setData({ ...data, category: e.target.value })}
-        />
+        >
+          {categories.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
 
         {/* Division */}
         <input
