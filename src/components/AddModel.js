@@ -9,7 +9,7 @@ export default function AddModel({ close, onSaved }) {
 
   const [tab, setTab] = useState("INCOME");
 
-  // Safely get user from localStorage
+  
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [data, setData] = useState({
@@ -19,10 +19,9 @@ export default function AddModel({ close, onSaved }) {
     division: "Personal",
     description: "",
     dateTime: new Date().toISOString(),
-    userId: user.id || ""   // safe fallback
+    userId: user.id || ""  
   });
 
-  // Submit handler with error handling
   const submit = async () => {
     if (!user.id) {
       alert("Please login first to add a transaction.");

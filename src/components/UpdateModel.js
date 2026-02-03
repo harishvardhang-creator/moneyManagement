@@ -15,7 +15,7 @@ export default function UpdateModel({ transaction, close, onUpdated }) {
     dateTime: new Date().toISOString(),
   });
 
-  // Pre-fill data when modal opens
+
   useEffect(() => {
     if (transaction) {
       setData({
