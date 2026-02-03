@@ -115,19 +115,6 @@ export default function UpdateModel({ transaction, close, onUpdated }) {
           onChange={(e) => setData({ ...data, description: e.target.value })}
         />
 
-        {/* Date & Time */}
-        <label className="block text-sm text-gray-600 mb-1">Date & Time</label>
-        <input
-          type="datetime-local"
-          className="border w-full mb-2 p-2 rounded"
-          value={formatDateTimeLocal(data.dateTime)}
-          onChange={(e) => {
-            const val = e.target.value; // 'YYYY-MM-DDTHH:MM' local
-            const iso = val ? new Date(val).toISOString() : ""; // store as ISO UTC
-            setData({ ...data, dateTime: iso });
-          }}
-        />
-
         {/* Buttons */}
         <div className="flex justify-end mt-4">
           <button
